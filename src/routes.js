@@ -1,20 +1,31 @@
 import { Router } from 'express'
-import { v4 } from 'uuid'
 
-import User from './app/models/User'
+import multer from'multer'
+import multerConfig from './config/multer'
+
+import UserController from './app/controllers/UserController'
+import SessionsController from './app/controllers/SessionsController'
+import ProductsController from './app/controllers/ProductsController'
+import CategoryController from './app/controllers/CategoryController'
+
+import authMiddleware from './app/middlewares/auth'
+
+
+const upload = multer(multerConfig)
 
 const routes = new Router()
 
-routes.get('/', async (request, response) => {
+routes.post('/users', UserController.store)
 
-  const user = await User.create({
-    id: v4(),
-    name: 'Rodolfo',
-    email: 'rodolfo@email.com',
-    password_hash: '23asd234',
-  })
-  return response.json(user)
-})
+routes.post('/sessions', SessionsController.store)
+
+routes.use(authMiddleware) // Será chamado por todas as rotas abaixo //
+
+routes.post('/products', upload.single('file'), ProductsController.store)
+routes.get('/products',  ProductsController.index)
+
+routes.post('/categories', CategoryController.store)
+routes.get('/categories',  CategoryController.index)
 
 
 export default routes
