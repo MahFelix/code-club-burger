@@ -22,6 +22,7 @@
     "sequelize-cli": "^6.6.1",
     "sucrase": "^3.32.0",
     "uuid": "^9.0.0",
+    "yarn": "^1.22.21",
     "yup": "^1.2.0"
   },
   "devDependencies": {
