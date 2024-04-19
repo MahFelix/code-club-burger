@@ -13,7 +13,7 @@ class UserController{
       password: Yup.string().required().min(6),
       admin: Yup.boolean(),
     });
-
+ 
     // if(!(await schema.isValid(request.body))){
     //   return response
     //   .status(400)
@@ -38,7 +38,7 @@ class UserController{
     }
 
     console.log(userExists)
-
+ 
     const user = await User.create({
       id: v4(),
       name,
@@ -49,9 +49,9 @@ class UserController{
 )
 
     return response.status(201).json({id: user.id, name, email, admin})
-
+ 
   }
 }
 
 
-export default  new UserController()
+export default  new UserController()  
