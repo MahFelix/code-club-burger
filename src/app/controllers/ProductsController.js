@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import Product from '../models/Product'
 import Category from '../models/Category'
 import User from '../models/User'
+import { response } from 'express'
 class ProductController {
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -32,6 +33,58 @@ class ProductController {
       offer,
     })
     return res.json(product)
+  }
+
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      price: Yup.number(),
+      category_id: Yup.number(),
+      offer: Yup.boolean(),
+    })
+
+    try {
+      await schema.validateSync(req.body, { abortEarly: false })
+    } catch (err) {
+      return res.status(400).json({ error: err.errors })
+    }
+
+    const { admin: isAdmin } = await User.findByPk(req.userId)
+    if (!isAdmin) {
+      return res.status(401).json()
+    }
+
+    const { id } = request.params;
+
+    const findProduct = await Product.findByPk(id);
+
+    if (!findProdufct) {
+      return response
+      .status(400)
+      .json({ error: 'Make sure your product ID is correct'})
+    }
+
+    let path;
+    if (request.file) {
+      path = request.file.filename
+    }
+    /* o LET PATH CORRESPONDE AO CONST DE BAIXO*/
+    // const { filename: path } = req.file
+
+    const { name, price, category_id, offer } = req.body
+
+await Product.update({
+      name,
+      price,
+      category_id,
+      path,
+      offer,
+    }, {
+      where: {
+        id,
+      }
+    })
+    return response.status(200).json
   }
 
   async index(req, res) {

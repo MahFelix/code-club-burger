@@ -20,12 +20,14 @@ class CategoryController {
       return response.status(401).json();
     }
 
+    const {filename: path } =  request.file;
+
     const { name } = request.body;
 
-    let path;
-    if (request.file) {
-      path = request.file.filename;
-    }
+    // let = path;
+    // if (request.file) {
+    //   path = request.file.filename;
+    // }
 
     const categoryExists = await Category.findOne({
       where: {
@@ -36,6 +38,80 @@ class CategoryController {
     if (categoryExists) {
       return response.status(400).json({ error: 'Category already exists' });
     }
+
+    const category = await Category.create({ name, path });
+
+    return response.status(201).json(category);
+  }
+
+  async index(request, response) {
+    const categories = await Category.findAll();
+
+    return response.json(categories);
+  }
+
+/* UPDATE */
+
+  async update(request, response) {
+    const schema = Yup.object({
+      name: Yup.string(),
+    });
+
+    try {
+      await schema.validateSync(request.body, { abortEarly: false });
+    } catch (err) {
+      return response.status(400).json({ error: err.errors });
+    }
+
+    const { admin: isAdmin } = await User.findByPk(request.userId);
+
+    if (!isAdmin) {
+      return response.status(401).json();
+    }
+
+
+    const {id} = request.params;
+
+    const categoryExists = await Category.findByPk(id);
+
+    if (!categoryExists) {
+      return response.status(400).json({ message: ' Make sure your Category ID is correct' });
+    }
+
+    let path;
+    if (request.file) {
+      path = request.file.filename;
+    }
+
+    const { name } = request.body;
+
+    if (!name && !path) {
+      return response.status().json()
+    }
+
+    
+    if (name) {
+      const categoryNameExists = await Category.findOne({
+        where: {
+          name,
+        },
+      });
+    }
+
+    
+
+    if (categoryNameExists && categoryNameExists.id ==! +id ) {
+      return response.status(400).json({ error: 'Category already exists' });
+    }
+
+    await Category.update({
+      name,
+      path,
+    }, {
+      where: {
+        id,
+      }
+    })
 
     const category = await Category.create({ name, path });
 
