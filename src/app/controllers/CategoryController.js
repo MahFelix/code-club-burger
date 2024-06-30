@@ -20,40 +20,28 @@ class CategoryController {
       return response.status(401).json();
     }
 
-    const {filename: path } =  request.file;
-
     const { name } = request.body;
 
-    // let = path;
-    // if (request.file) {
-    //   path = request.file.filename;
-    // }
-
     const categoryExists = await Category.findOne({
-      where: {
-        name,
-      },
+      where: { name },
     });
 
     if (categoryExists) {
       return response.status(400).json({ error: 'Category already exists' });
     }
 
-    const category = await Category.create({ name, path });
+    const category = await Category.create({ name });
 
     return response.status(201).json(category);
   }
 
   async index(request, response) {
     const categories = await Category.findAll();
-
     return response.json(categories);
   }
 
-/* UPDATE */
-
   async update(request, response) {
-    const schema = Yup.object({
+    const schema = Yup.object().shape({
       name: Yup.string(),
     });
 
@@ -69,13 +57,11 @@ class CategoryController {
       return response.status(401).json();
     }
 
-
-    const {id} = request.params;
-
+    const { id } = request.params;
     const categoryExists = await Category.findByPk(id);
 
     if (!categoryExists) {
-      return response.status(400).json({ message: ' Make sure your Category ID is correct' });
+      return response.status(400).json({ message: 'Make sure your Category ID is correct' });
     }
 
     let path;
@@ -86,46 +72,27 @@ class CategoryController {
     const { name } = request.body;
 
     if (!name && !path) {
-      return response.status().json()
+      return response.status(400).json({ error: 'Name or file is required.' });
     }
 
-    
     if (name) {
       const categoryNameExists = await Category.findOne({
-        where: {
-          name,
-        },
+        where: { name },
       });
-    }
 
-    
-
-    if (categoryNameExists && categoryNameExists.id ==! +id ) {
-      return response.status(400).json({ error: 'Category already exists' });
-    }
-
-    await Category.update({
-      name,
-      path,
-    }, {
-      where: {
-        id,
+      if (categoryNameExists && categoryNameExists.id !== +id) {
+        return response.status(400).json({ error: 'Category already exists' });
       }
-    })
+    }
 
-    const category = await Category.create({ name, path });
+    await Category.update(
+      { name, path },
+      { where: { id } }
+    );
 
-    return response.status(201).json(category);
-  }
+    const updatedCategory = await Category.findByPk(id);
 
-  async index(request, response) {
-    const categories = await Category.findAll();
-
-    return response.json(categories);
-  }
-
-  async update(request, response) {
-    
+    return response.status(200).json(updatedCategory);
   }
 }
 
