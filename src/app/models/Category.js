@@ -1,4 +1,4 @@
-import Sequelize, { Model } from "sequelize";
+import { Sequelize, Model } from "sequelize";
 
 class Category extends Model {
   static init(sequelize) {
@@ -18,14 +18,6 @@ class Category extends Model {
       }
     );
     return this;
-  }
-
-  static associate(models) {
-    // Adiciona uma relação, caso os produtos estejam vinculados a categorias
-    this.hasMany(models.Product, {
-      foreignKey: 'category_id',
-      as: 'products',
-    });
   }
 }
 
