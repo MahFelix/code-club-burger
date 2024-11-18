@@ -1,8 +1,8 @@
-import * as Yup from 'yup'
-import Product from '../models/Product'
-import Category from '../models/Category'
-import User from '../models/User'
-import { response } from 'express'
+import * as Yup from 'yup';
+import Product from '../models/Product';
+import Category from '../models/Category';
+import User from '../models/User';
+
 class ProductController {
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -10,20 +10,20 @@ class ProductController {
       price: Yup.number().required(),
       category_id: Yup.number().required(),
       offer: Yup.boolean(),
-    })
+    });
 
     try {
-      await schema.validateSync(req.body, { abortEarly: false })
+      await schema.validateSync(req.body, { abortEarly: false });
     } catch (err) {
-      return res.status(400).json({ error: err.errors })
+      return res.status(400).json({ error: err.errors });
     }
 
-    const { admin: isAdmin } = await User.findByPk(req.userId)
+    const { admin: isAdmin } = await User.findByPk(req.userId);
     if (!isAdmin) {
-      return res.status(401).json()
+      return res.status(401).json();
     }
-    const { filename: path } = req.file
-    const { name, price, category_id, offer } = req.body
+    const { filename: path } = req.file;
+    const { name, price, category_id, offer } = req.body;
 
     const product = await Product.create({
       name,
@@ -31,8 +31,8 @@ class ProductController {
       category_id,
       path,
       offer,
-    })
-    return res.json(product)
+    });
+    return res.json(product);
   }
 
   async update(req, res) {
@@ -41,50 +41,51 @@ class ProductController {
       price: Yup.number(),
       category_id: Yup.number(),
       offer: Yup.boolean(),
-    })
+    });
 
     try {
-      await schema.validateSync(req.body, { abortEarly: false })
+      await schema.validateSync(req.body, { abortEarly: false });
     } catch (err) {
-      return res.status(400).json({ error: err.errors })
+      return res.status(400).json({ error: err.errors });
     }
 
-    const { admin: isAdmin } = await User.findByPk(req.userId)
+    const { admin: isAdmin } = await User.findByPk(req.userId);
     if (!isAdmin) {
-      return res.status(401).json()
+      return res.status(401).json();
     }
 
-    const { id } = request.params;
+    const { id } = req.params;
 
     const findProduct = await Product.findByPk(id);
 
-    if (!findProdufct) {
-      return response
-      .status(400)
-      .json({ error: 'Make sure your product ID is correct'})
+    if (!findProduct) {
+      return res
+        .status(400)
+        .json({ error: 'Make sure your product ID is correct' });
     }
 
     let path;
-    if (request.file) {
-      path = request.file.filename
+    if (req.file) {
+      path = req.file.filename;
     }
-    /* o LET PATH CORRESPONDE AO CONST DE BAIXO*/
-    // const { filename: path } = req.file
 
-    const { name, price, category_id, offer } = req.body
+    const { name, price, category_id, offer } = req.body;
 
-await Product.update({
-      name,
-      price,
-      category_id,
-      path,
-      offer,
-    }, {
-      where: {
-        id,
+    await Product.update(
+      {
+        name,
+        price,
+        category_id,
+        path,
+        offer,
+      },
+      {
+        where: {
+          id,
+        },
       }
-    })
-    return response.status(200).json
+    );
+    return res.status(200).json();
   }
 
   async index(req, res) {
@@ -96,64 +97,10 @@ await Product.update({
           attributes: ['id', 'name'],
         },
       ],
-    })
+    });
 
-    return res.json(products)
-  }
-
-  async update(req, res) {
-    try {
-      const schema = Yup.object().shape({
-        name: Yup.string(),
-        price: Yup.number(),
-        category_id: Yup.number(),
-        offer: Yup.boolean(),
-      })
-
-      try {
-        await schema.validateSync(req.body, { abortEarly: false })
-      } catch (err) {
-        return res.status(400).json({ error: err.errors })
-      }
-
-      const { admin: isAdmin } = await User.findByPk(req.userId)
-
-      if (!isAdmin) {
-        return res.status(401).json()
-      }
-
-      const { id } = req.params
-
-      const product = await Product.findByPk(id)
-
-      if (!product) {
-        return res
-          .status(401)
-          .json({ error: 'Make sure your product ID is correct' })
-      }
-
-      let path
-      if (req.file) {
-        path = req.file.filename
-      }
-
-      const { name, price, category_id, offer } = req.body
-
-      await Product.update(
-        {
-          name,
-          price,
-          category_id,
-          path,
-          offer,
-        },
-        { where: { id } },
-      )
-      return res.status(200).json()
-    } catch (err) {
-      console.log(err)
-    }
+    return res.json(products);
   }
 }
 
-export default new ProductController()
+export default new ProductController();

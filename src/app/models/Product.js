@@ -1,6 +1,6 @@
-import Sequelize, { Model } from 'sequelize'
+import Sequelize from 'sequelize';
 
-class Product extends Model {
+class Product extends Sequelize.Model {
   static init(sequelize) {
     super.init(
       {
@@ -11,23 +11,23 @@ class Product extends Model {
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `http://localhost:3001/product-file/${this.path}`
+            return `http://localhost:3001/product-file/${this.path}`;
           },
-        },  
+        },
       },
       {
         sequelize,
-      },
-    )
-    return this
-  } 
+      }
+    );
+    return this;
+  }
 
   static associate(models) {
     this.belongsTo(models.Category, {
       foreignKey: 'category_id',
-      as: 'category', 
-    })
-  } 
-} 
- 
-export default Product
+      as: 'category',
+    });
+  }
+}
+
+export default Product;
