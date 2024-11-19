@@ -8,12 +8,12 @@ class Product extends Sequelize.Model {
         price: Sequelize.INTEGER,
         path: Sequelize.STRING,
         offer: Sequelize.BOOLEAN,
-        url: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return `http://localhost:3001/product-file/${this.path}`;
+          url: {
+            type: Sequelize.VIRTUAL,
+            get() {
+              return `http://localhost:3001/product-file/${this.path}`;
+            },
           },
-        },
       },
       {
         sequelize,

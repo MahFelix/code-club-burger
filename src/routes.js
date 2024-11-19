@@ -1,41 +1,46 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import multer from'multer'
-import multerConfig from './config/multer'
+//Multer(upload)
+import multer from 'multer';
+import multerConfig from './config/multer';
 
-import UserController from './app/controllers/UserController'
-import SessionsController from './app/controllers/SessionsController'
-import ProductsController from './app/controllers/ProductsController'
-import CategoryController from './app/controllers/CategoryController'
+//Controller
+import UserController from './app/controllers/UserController';
+import SessionController from './app/controllers/SessionsController';
+import ProductController from './app/controllers/ProductsController';
+import CategoryController from './app/controllers/CategoryController';
+import OrderController from './app/controllers/OrderController';
 
-import authMiddleware from './app/middlewares/auth'
-import OrderController from './app/controllers/OrderController'
+//Middleware
+import authMiddleware from '../src/app/middlewares/auth';
+
+const routes = new Router();
+
+const upload = multer(multerConfig);
+
+routes.get('/', (req, res) => {
+	return res.json({ message: 'DevBurger API :)' });
+});
+
+routes.post('/users', UserController.store);
+routes.post('/session', SessionController.store);
+
+routes.use(authMiddleware);
+
+//PRODUCTS
+routes.post('/products', upload.single('file'), ProductController.store); //upload de um só arquivo no campo 'file'
+routes.put('/products/:id', upload.single('file'), ProductController.update);
+routes.get('/products', ProductController.index);
+
+//CATEGORIES
+routes.post('/categories', upload.single('file'), CategoryController.store);
+routes.put('/categories/:id', upload.single('file'), CategoryController.update);
+routes.get('/categories', CategoryController.index);
+
+//ORDERS
+routes.post('/orders', OrderController.store);
+routes.get('/orders', OrderController.index);
+routes.put('/orders/:id', OrderController.update);
 
 
-const upload = multer(multerConfig)
-
-const routes = new Router()
-
-routes.post('/users', UserController.store)
-
-routes.post('/sessions', SessionsController.store)
-
-routes.use(authMiddleware) // Será chamado por todas as rotas abaixo //
-routes.post('/products', upload.single('file'), ProductsController.store)
-routes.get('/products',  ProductsController.index)
-routes.put('/products/:id', upload.single('file'), ProductsController.update)
-
-routes.post('/categories', upload.single('file'), CategoryController.store)
-routes.get('/categories',  CategoryController.index) 
-routes.put('/categories/:id', upload.single('file'), CategoryController.update)
-
-routes.post('/orders', OrderController.store)
-routes.get('/orders', OrderController.index)
-routes.put('/orders/:id', OrderController.update)
-
-
-
-
- 
-export default routes
- 
+export default routes;
