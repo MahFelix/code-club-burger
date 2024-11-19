@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
 import authConfig from '../../config/auth';
-import express from 'express';
-import { resolve } from 'path';
 
 function authMiddleware(request, response, next) {
 	const authToken = request.headers.authorization;
@@ -27,17 +25,6 @@ function authMiddleware(request, response, next) {
 	return next();
 }
 
-const productFileMiddleware = (req, res, next) => {
-	console.log('Requested file path:', req.originalUrl);
-	next();
-};
 
-const staticMiddleware = express.static(resolve('uploads'));
-
-export const middlewares = [
-	authMiddleware,
-	productFileMiddleware,
-	staticMiddleware,
-];
 
 export default authMiddleware;

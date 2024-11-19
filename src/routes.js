@@ -23,7 +23,7 @@ routes.get('/', (req, res) => {
 });
 
 routes.post('/users', UserController.store);
-routes.post('/session', SessionController.store);
+routes.post('/sessions', SessionController.store);
 
 routes.use(authMiddleware);
 

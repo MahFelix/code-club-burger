@@ -39,12 +39,15 @@ class OrderController {
     })
 
     const formattedProducts = findProducts.map((product) => ({
+      id: product.id,  // Adicionar o id aqui
       name: product.name,
       category: product.category.name,
       price: product.price,
       url: product.url,
+      path: product.path,
       quantity: products.find(p => p.id === product.id).quantity
     }));
+    
 
     const order = {
       user: {
@@ -68,7 +71,7 @@ class OrderController {
 
   async update(request, response) {
       const schema = Yup.object().shape({
-        status: Yup.String().required()
+        status: Yup.string().required()
           
       });
   
